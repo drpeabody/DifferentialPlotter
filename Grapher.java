@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class Grapher {
     //Math stuff
     static double x, y, dx, dy, d2y;
-    static double x1, y1, x_1, y_1; //Boundary conditions
+    static double x1, y1, y_1; //Boundary conditions
     static int cycles;
     
     //Camera Stuff
@@ -51,14 +51,15 @@ public class Grapher {
         dy = dx = 0.001;
         cycles = 10;
         x = x1 = dx; 
-        y = y1 = dx;
+        y = y1 = 1;
+        y_1 = 1;
         
         //Screen
         height = 720; width = 1280;
         
         //Frame
-        startX = -10; startY = 0;
-        endX = 10; endY = 0;
+        startX = -12.80; startY = -7.20;
+        endX = 12.8; endY = 7.20;
         num = (int)((endX - startX)/dx);
         FxPlus = new double[num*2];
         for(int i = 0; i < FxPlus.length; i++){
@@ -72,8 +73,6 @@ public class Grapher {
         //Camera
         scaleX = (endX - startX)/width; 
         scaleY = (endY - startY)/height;
-        scaleX = scaleX;
-        scaleY = 0.01;
         posX = posY = 0f;
         
         //Mouse
@@ -96,7 +95,7 @@ public class Grapher {
         glClearColor(.1f, 0f, .15f, 1f);
         glColor4f(1f, 1f, 1f, 1f);
 
-        bufferOrderOne(FxPlus, FxMinus);
+        bufferOrderTwo(FxPlus, FxMinus);
         
         while(!Display.isCloseRequested()){
             glClear(GL_COLOR_BUFFER_BIT);
@@ -146,15 +145,41 @@ public class Grapher {
             if(x < startX && dx < 0) return;
         }
     }
-    
     public static void bufferOrderTwo(double[] f, double[] g){
-        System.out.println("Do This");
+        int a = 0;
+        dy = y_1;
+        while(true){
+            for (int i = 0; i < cycles; i++) {
+                d2y = secondOrder(x, y, dy/dx) * (dx)* (dx);
+                dy += d2y;
+            }
+            y += dy;
+            x += dx;
+            if(dx > 0){
+                f[a++] = x;
+                f[a++] = y;
+            }
+            else{
+                g[a++] = x;
+                g[a++] = y;
+            }
+            if(x > endX){
+                a = 0;
+                x = x1;
+                y = y1;
+                dy = -y_1;
+                dx = -dx;
+                continue;
+            }
+            if(x >= 5 && x <= 5.0001) System.out.println(y);
+            if(x < startX && dx < 0) return;
+        }
+        
     }
     
     public static double secondOrder(double x, double y, double Yx){
-        return 1;
+        return -Yx;
     }
-    
     //Doesn't work with functions of y
     public static double firstOrder(double x, double y){
 //        return (5*x*x*x - 4*x*x - 3*x + 2);
@@ -185,8 +210,8 @@ public class Grapher {
         if(Mouse.isButtonDown(1)){
             scaleX += Mouse.getDX()*zoom;
             scaleY += Mouse.getDY()*zoom;
-            if(scaleX < 0) scaleX = zoom;
-            if(scaleY < 0) scaleY = zoom;
+            if(scaleX <= 0) scaleX = zoom;
+            if(scaleY <= 0) scaleY = zoom;
         }
     }
 }
