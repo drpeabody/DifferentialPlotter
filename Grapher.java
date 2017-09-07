@@ -1,5 +1,3 @@
-package Projects.DifferentialPlotter;
-
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
@@ -18,7 +16,7 @@ public class Grapher {
     static int cycles;
     
     //Camera Stuff
-    static double scaleX, scaleY, //length per pixel
+    static double scale, //length per pixel
                 posX, posY; //length not pixels
     
     //Screen Stuff
@@ -34,16 +32,16 @@ public class Grapher {
     static float sense, zoom;
             
     public static double translateToScreenX(double x) {
-        return (x - posX) / scaleX;
+        return (x - posX) / scale;
     }
     public static double translateToScreenY(double y) {
-        return (y - posY) / scaleY;
+        return (y - posY) / scale;
     }
     public static double translateToWorldX(double x) {
-        return x * scaleX + posX;
+        return x * scale + posX;
     }
     public static double translateToWorldY(double y){
-            return y * scaleY + posY;
+            return y * scale + posY;
     }
     
     public static void initDefaults(){
@@ -71,8 +69,7 @@ public class Grapher {
         }
         
         //Camera
-        scaleX = (endX - startX)/width; 
-        scaleY = (endY - startY)/height;
+        scaleX = ((Math.abs(endY - startY) + Math.abs(endX - startX))/(width + height);
         posX = posY = 0f;
         
         //Mouse
@@ -191,27 +188,27 @@ public class Grapher {
     }
     public static void drawAxes() {
         glBegin(GL_QUADS);
-        glVertex2d(-width, (-posY)/scaleY - 1);
-        glVertex2d(-width, (-posY)/scaleY + 1);
-        glVertex2d(width, (-posY)/scaleY + 1);
-        glVertex2d(width, (-posY)/scaleY - 1);
-        glVertex2d((-posX)/scaleX - 1, -height);
-        glVertex2d((-posX)/scaleX + 1, -height);
-        glVertex2d((-posX)/scaleX + 1, height);
-        glVertex2d((-posX)/scaleX - 1, height);
+        glVertex2d(-width, (-posY)/scale - 1);
+        glVertex2d(-width, (-posY)/scale + 1);
+        glVertex2d(width, (-posY)/scale + 1);
+        glVertex2d(width, (-posY)/scale - 1);
+        glVertex2d((-posX)/scale - 1, -height);
+        glVertex2d((-posX)/scale + 1, -height);
+        glVertex2d((-posX)/scale + 1, height);
+        glVertex2d((-posX)/scale - 1, height);
         glEnd();
     }
 
     public static void processInput(){
         if(Mouse.isButtonDown(0)) {
-            posX -= Mouse.getDX()*scaleX;
-            posY -= Mouse.getDY()*scaleY;
+            posX -= Mouse.getDX()*scale;
+            posY -= Mouse.getDY()*scale;
         }
         if(Mouse.isButtonDown(1)){
-            scaleX += Mouse.getDX()*zoom;
-            scaleY += Mouse.getDY()*zoom;
-            if(scaleX <= 0) scaleX = zoom;
-            if(scaleY <= 0) scaleY = zoom;
+            scale += Mouse.getDX()*zoom;
+            scale += Mouse.getDY()*zoom;
+            if(scale <= 0) scale = zoom;
+            if(scale <= 0) scale = zoom;
         }
     }
 }
