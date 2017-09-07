@@ -69,7 +69,7 @@ public class Grapher {
         }
         
         //Camera
-        scaleX = ((Math.abs(endY - startY) + Math.abs(endX - startX))/(width + height);
+        scale = ((Math.abs(endY - startY) + Math.abs(endX - startX)))/(width + height);
         posX = posY = 0f;
         
         //Mouse
